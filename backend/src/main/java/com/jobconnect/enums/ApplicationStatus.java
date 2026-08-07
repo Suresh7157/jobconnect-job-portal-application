@@ -6,7 +6,7 @@ package com.jobconnect.enums;
  */
 public enum ApplicationStatus {
     APPLIED,
-    UNDER_REVIEW,
-    ACCEPTED,
+    SHORTLISTED,
+    HIRED,
     REJECTED
 }

@@ -2,6 +2,7 @@ package com.jobconnect.service;
 
 import com.jobconnect.dto.ApplicationRequest;
 import com.jobconnect.dto.ApplicationResponse;
+import com.jobconnect.dto.UpdateApplicationStatusRequest;
 import com.jobconnect.entity.Application;
 import com.jobconnect.entity.CandidateProfile;
 import com.jobconnect.entity.Job;
@@ -86,6 +87,26 @@ public class ApplicationService {
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Updates the status of an existing application.
+     *
+     * @param applicationId the ID of the application to update
+     * @param request       the payload containing the new application status
+     * @return ApplicationResponse containing the updated application details
+     * @throws RuntimeException if no application is found for the given ID
+     */
+    @Transactional
+    public ApplicationResponse updateApplicationStatus(Long applicationId, UpdateApplicationStatusRequest request) {
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new RuntimeException("Application not found."));
+
+        application.setStatus(request.getStatus());
+
+        Application savedApplication = applicationRepository.save(application);
+
+        return mapToResponse(savedApplication);
     }
 
     /**

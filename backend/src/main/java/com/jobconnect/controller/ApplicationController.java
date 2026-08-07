@@ -2,6 +2,7 @@ package com.jobconnect.controller;
 
 import com.jobconnect.dto.ApplicationRequest;
 import com.jobconnect.dto.ApplicationResponse;
+import com.jobconnect.dto.UpdateApplicationStatusRequest;
 import com.jobconnect.service.ApplicationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,6 +59,19 @@ public class ApplicationController {
     @GetMapping("/recruiter/job/{jobId}")
     public ResponseEntity<List<ApplicationResponse>> getApplicantsForJob(@PathVariable Long jobId) {
         List<ApplicationResponse> response = applicationService.getApplicantsForJob(jobId);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * PUT /api/applications/{applicationId}/status
+     * Updates the status of the given application ID.
+     */
+    @PutMapping("/{applicationId}/status")
+    public ResponseEntity<ApplicationResponse> updateApplicationStatus(
+            @PathVariable Long applicationId,
+            @Valid @RequestBody UpdateApplicationStatusRequest request
+    ) {
+        ApplicationResponse response = applicationService.updateApplicationStatus(applicationId, request);
         return ResponseEntity.ok(response);
     }
 }
