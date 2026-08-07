@@ -17,4 +17,14 @@ public interface JobRepository extends JpaRepository<Job, Long> {
      * Finds all Jobs belonging to a specific RecruiterProfile ID.
      */
     List<Job> findByRecruiterProfileId(Long recruiterProfileId);
+
+    /**
+     * Finds all Jobs whose title contains the given keyword, case-insensitive.
+     */
+    List<Job> findByTitleContainingIgnoreCase(String title);
+
+    /**
+     * Finds all Jobs whose location contains the given keyword, case-insensitive.
+     */
+    List<Job> findByLocationContainingIgnoreCase(String location);
 }
