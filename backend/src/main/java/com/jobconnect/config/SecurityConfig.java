@@ -62,9 +62,10 @@ public class SecurityConfig {
 
             // 3. Configure Endpoint Authorization Rules
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()        // Public authentication endpoints
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")  // Admin-only endpoints
-                .anyRequest().authenticated()                       // All other endpoints require authentication
+                .requestMatchers("/api/auth/**").permitAll()           // Public authentication endpoints
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")     // Admin-only endpoints
+                .requestMatchers("/api/recruiter/**").hasRole("RECRUITER") // Recruiter-only endpoints
+                .anyRequest().authenticated()                          // All other endpoints require authentication
             )
 
             // 4. Register Custom Authentication Provider
