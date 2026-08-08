@@ -1,6 +1,7 @@
 package com.jobconnect.repository;
 
 import com.jobconnect.entity.Job;
+import com.jobconnect.enums.JobStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -27,4 +28,14 @@ public interface JobRepository extends JpaRepository<Job, Long> {
      * Finds all Jobs whose location contains the given keyword, case-insensitive.
      */
     List<Job> findByLocationContainingIgnoreCase(String location);
+
+    /**
+     * Counts all Jobs belonging to a specific recruiter profile ID.
+     */
+    long countByRecruiterProfileId(Long recruiterProfileId);
+
+    /**
+     * Counts all Jobs belonging to a specific recruiter profile ID with a given status.
+     */
+    long countByRecruiterProfileIdAndStatus(Long recruiterProfileId, JobStatus status);
 }

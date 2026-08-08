@@ -1,6 +1,7 @@
 package com.jobconnect.repository;
 
 import com.jobconnect.entity.Application;
+import com.jobconnect.enums.ApplicationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -28,4 +29,24 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
      * Finds all Applications submitted for a specific job ID.
      */
     List<Application> findByJobId(Long jobId);
+
+    /**
+     * Counts all Applications submitted by a specific candidate profile ID.
+     */
+    long countByCandidateProfileId(Long candidateProfileId);
+
+    /**
+     * Counts all Applications submitted by a specific candidate profile ID with a given status.
+     */
+    long countByCandidateProfileIdAndStatus(Long candidateProfileId, ApplicationStatus status);
+
+    /**
+     * Counts all Applications belonging to jobs posted by a specific recruiter profile ID.
+     */
+    long countByJobRecruiterProfileId(Long recruiterProfileId);
+
+    /**
+     * Counts all Applications belonging to jobs posted by a specific recruiter profile ID with a given status.
+     */
+    long countByJobRecruiterProfileIdAndStatus(Long recruiterProfileId, ApplicationStatus status);
 }
