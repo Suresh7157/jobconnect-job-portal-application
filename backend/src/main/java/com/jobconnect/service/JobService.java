@@ -2,6 +2,7 @@ package com.jobconnect.service;
 
 import com.jobconnect.dto.JobRequest;
 import com.jobconnect.dto.JobResponse;
+import com.jobconnect.dto.UpdateJobStatusRequest;
 import com.jobconnect.entity.Job;
 import com.jobconnect.entity.RecruiterProfile;
 import com.jobconnect.repository.JobRepository;
@@ -120,6 +121,34 @@ public class JobService {
         }
 
         jobRepository.delete(job);
+    }
+
+    /**
+     * Updates the status of a job posting owned by the recruiter identified by the given user ID.
+     *
+     * @param userId  the ID of the authenticated recruiter user
+     * @param jobId   the ID of the job to update
+     * @param request the job status update data
+     * @return JobResponse containing the updated job details
+     * @throws RuntimeException if recruiter profile, job is not found, or ownership check fails
+     */
+    @Transactional
+    public JobResponse updateJobStatus(Long userId, Long jobId, UpdateJobStatusRequest request) {
+        RecruiterProfile recruiterProfile = recruiterProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Recruiter profile not found."));
+
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found."));
+
+        if (!job.getRecruiterProfile().getId().equals(recruiterProfile.getId())) {
+            throw new RuntimeException("You are not authorized to update this job.");
+        }
+
+        job.setStatus(request.getStatus());
+
+        Job savedJob = jobRepository.save(job);
+
+        return mapToResponse(savedJob);
     }
 
     /**
