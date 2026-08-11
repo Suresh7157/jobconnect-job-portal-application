@@ -5,6 +5,7 @@ import com.jobconnect.dto.RecruiterDashboardResponse;
 import com.jobconnect.entity.CandidateProfile;
 import com.jobconnect.entity.RecruiterProfile;
 import com.jobconnect.enums.ApplicationStatus;
+import com.jobconnect.exception.ResourceNotFoundException;
 import com.jobconnect.repository.ApplicationRepository;
 import com.jobconnect.repository.CandidateProfileRepository;
 import com.jobconnect.repository.JobRepository;
@@ -34,7 +35,7 @@ public class DashboardService {
      */
     public CandidateDashboardResponse getCandidateDashboard(Long userId) {
         CandidateProfile candidateProfile = candidateProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Candidate profile not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Candidate profile not found."));
 
         Long candidateProfileId = candidateProfile.getId();
 
@@ -62,7 +63,7 @@ public class DashboardService {
      */
     public RecruiterDashboardResponse getRecruiterDashboard(Long userId) {
         RecruiterProfile recruiterProfile = recruiterProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Recruiter profile not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Recruiter profile not found."));
 
         Long recruiterProfileId = recruiterProfile.getId();
 

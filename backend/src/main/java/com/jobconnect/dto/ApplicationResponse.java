@@ -25,4 +25,5 @@ public class ApplicationResponse {
     private String recruiterCompany;
     private ApplicationStatus status;
     private LocalDateTime appliedAt;
+    private String coverLetter;
 }

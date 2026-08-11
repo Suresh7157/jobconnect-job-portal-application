@@ -3,6 +3,7 @@ package com.jobconnect.service;
 import com.jobconnect.dto.CandidateProfileRequest;
 import com.jobconnect.dto.CandidateProfileResponse;
 import com.jobconnect.entity.CandidateProfile;
+import com.jobconnect.exception.ResourceNotFoundException;
 import com.jobconnect.repository.CandidateProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class CandidateService {
      */
     public CandidateProfileResponse getMyProfile(Long userId) {
         CandidateProfile profile = candidateProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Candidate profile not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Candidate profile not found."));
 
         return mapToResponse(profile);
     }
@@ -43,7 +44,7 @@ public class CandidateService {
     @Transactional
     public CandidateProfileResponse updateMyProfile(Long userId, CandidateProfileRequest request) {
         CandidateProfile profile = candidateProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Candidate profile not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Candidate profile not found."));
 
         profile.setFullName(request.getFullName());
         profile.setPhone(request.getPhone());

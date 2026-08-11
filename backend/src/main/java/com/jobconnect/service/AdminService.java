@@ -3,11 +3,13 @@ package com.jobconnect.service;
 import com.jobconnect.dto.AdminUserResponse;
 import com.jobconnect.dto.ApplicationResponse;
 import com.jobconnect.dto.JobResponse;
+import com.jobconnect.dto.UpdateApplicationStatusRequest;
 import com.jobconnect.entity.Application;
 import com.jobconnect.entity.CandidateProfile;
 import com.jobconnect.entity.Job;
 import com.jobconnect.entity.RecruiterProfile;
 import com.jobconnect.entity.User;
+import com.jobconnect.exception.ResourceNotFoundException;
 import com.jobconnect.repository.ApplicationRepository;
 import com.jobconnect.repository.CandidateProfileRepository;
 import com.jobconnect.repository.JobRepository;
@@ -71,6 +73,49 @@ public class AdminService {
     }
 
     /**
+     * Retrieves a single job application by its ID.
+     *
+     * @param applicationId the ID of the application
+     * @return ApplicationResponse containing the application details
+     * @throws ResourceNotFoundException if no application is found for the given ID
+     */
+    public ApplicationResponse getApplicationById(Long applicationId) {
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found."));
+        return mapApplicationToResponse(application);
+    }
+
+    /**
+     * Updates the status of an existing application.
+     *
+     * @param applicationId the ID of the application to update
+     * @param request       the payload containing the new application status
+     * @return ApplicationResponse containing the updated application details
+     * @throws ResourceNotFoundException if no application is found for the given ID
+     */
+    @Transactional
+    public ApplicationResponse updateApplicationStatus(Long applicationId, UpdateApplicationStatusRequest request) {
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found."));
+        application.setStatus(request.getStatus());
+        Application savedApplication = applicationRepository.save(application);
+        return mapApplicationToResponse(savedApplication);
+    }
+
+    /**
+     * Deletes a single job application by its ID.
+     *
+     * @param applicationId the ID of the application to delete
+     * @throws ResourceNotFoundException if no application is found for the given ID
+     */
+    @Transactional
+    public void deleteApplication(Long applicationId) {
+        applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found."));
+        applicationRepository.deleteById(applicationId);
+    }
+
+    /**
      * Deletes a user and all their associated data in the correct dependency order.
      *
      * @param userId the ID of the user to delete
@@ -79,7 +124,7 @@ public class AdminService {
     @Transactional
     public void deleteUser(Long userId) {
         userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
         candidateProfileRepository.findByUserId(userId).ifPresent(candidateProfile -> {
             List<Application> applications = applicationRepository.findByCandidateProfileId(candidateProfile.getId());
@@ -109,7 +154,7 @@ public class AdminService {
     @Transactional
     public void deleteJob(Long jobId) {
         jobRepository.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found."));
 
         List<Application> applications = applicationRepository.findByJobId(jobId);
         applicationRepository.deleteAll(applications);
@@ -167,6 +212,7 @@ public class AdminService {
                 .recruiterCompany(application.getJob().getRecruiterProfile().getCompanyName())
                 .status(application.getStatus())
                 .appliedAt(application.getAppliedAt())
+                .coverLetter(application.getCoverLetter())
                 .build();
     }
 }

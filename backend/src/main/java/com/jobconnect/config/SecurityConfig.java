@@ -65,6 +65,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()           // Public authentication endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")     // Admin-only endpoints
                 .requestMatchers("/api/recruiter/**").hasRole("RECRUITER") // Recruiter-only endpoints
+                .requestMatchers("/api/jobs/**").permitAll()           // Public job endpoints
                 .anyRequest().authenticated()                          // All other endpoints require authentication
             )
 

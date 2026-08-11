@@ -2,6 +2,9 @@ package com.jobconnect.service;
 
 import com.jobconnect.dto.JobResponse;
 import com.jobconnect.entity.Job;
+import com.jobconnect.enums.JobStatus;
+import com.jobconnect.enums.JobType;
+import com.jobconnect.exception.ResourceNotFoundException;
 import com.jobconnect.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,13 +23,16 @@ public class PublicJobService {
     private final JobRepository jobRepository;
 
     /**
-     * Retrieves all available job postings.
+     * Retrieves all OPEN job postings, optionally filtered by job type.
      *
-     * @return list of JobResponse containing all job postings
+     * @param jobType optional job type filter; if null, all OPEN jobs are returned
+     * @return list of JobResponse containing matching OPEN job postings
      */
-    public List<JobResponse> getAllJobs() {
-        return jobRepository.findAll()
-                .stream()
+    public List<JobResponse> getAllJobs(JobType jobType) {
+        List<Job> jobs = (jobType == null)
+                ? jobRepository.findByStatus(JobStatus.OPEN)
+                : jobRepository.findByStatusAndJobType(JobStatus.OPEN, jobType);
+        return jobs.stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -40,33 +46,41 @@ public class PublicJobService {
      */
     public JobResponse getJobById(Long jobId) {
         Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found."));
 
         return mapToResponse(job);
     }
 
     /**
-     * Searches for job postings whose title contains the given keyword, case-insensitive.
+     * Searches for OPEN job postings whose title contains the given keyword, case-insensitive,
+     * optionally filtered by job type.
      *
-     * @param title the keyword to search for in job titles
-     * @return list of JobResponse matching the title keyword
+     * @param title   the keyword to search for in job titles
+     * @param jobType optional job type filter; if null, all matching OPEN jobs are returned
+     * @return list of JobResponse matching the criteria
      */
-    public List<JobResponse> searchByTitle(String title) {
-        return jobRepository.findByTitleContainingIgnoreCase(title)
-                .stream()
+    public List<JobResponse> searchByTitle(String title, JobType jobType) {
+        List<Job> jobs = (jobType == null)
+                ? jobRepository.findByStatusAndTitleContainingIgnoreCase(JobStatus.OPEN, title)
+                : jobRepository.findByStatusAndTitleContainingIgnoreCaseAndJobType(JobStatus.OPEN, title, jobType);
+        return jobs.stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
     /**
-     * Searches for job postings whose location contains the given keyword, case-insensitive.
+     * Searches for OPEN job postings whose location contains the given keyword, case-insensitive,
+     * optionally filtered by job type.
      *
      * @param location the keyword to search for in job locations
-     * @return list of JobResponse matching the location keyword
+     * @param jobType  optional job type filter; if null, all matching OPEN jobs are returned
+     * @return list of JobResponse matching the criteria
      */
-    public List<JobResponse> searchByLocation(String location) {
-        return jobRepository.findByLocationContainingIgnoreCase(location)
-                .stream()
+    public List<JobResponse> searchByLocation(String location, JobType jobType) {
+        List<Job> jobs = (jobType == null)
+                ? jobRepository.findByStatusAndLocationContainingIgnoreCase(JobStatus.OPEN, location)
+                : jobRepository.findByStatusAndLocationContainingIgnoreCaseAndJobType(JobStatus.OPEN, location, jobType);
+        return jobs.stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

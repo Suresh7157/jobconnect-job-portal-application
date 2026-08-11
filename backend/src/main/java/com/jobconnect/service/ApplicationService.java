@@ -6,6 +6,7 @@ import com.jobconnect.dto.UpdateApplicationStatusRequest;
 import com.jobconnect.entity.Application;
 import com.jobconnect.entity.CandidateProfile;
 import com.jobconnect.entity.Job;
+import com.jobconnect.exception.ResourceNotFoundException;
 import com.jobconnect.repository.ApplicationRepository;
 import com.jobconnect.repository.CandidateProfileRepository;
 import com.jobconnect.repository.JobRepository;
@@ -39,10 +40,10 @@ public class ApplicationService {
     @Transactional
     public ApplicationResponse applyForJob(Long userId, ApplicationRequest request) {
         CandidateProfile candidateProfile = candidateProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Candidate profile not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Candidate profile not found."));
 
         Job job = jobRepository.findById(request.getJobId())
-                .orElseThrow(() -> new RuntimeException("Job not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found."));
 
         applicationRepository.findByCandidateProfileIdAndJobId(candidateProfile.getId(), job.getId())
                 .ifPresent(existing -> {
@@ -52,6 +53,7 @@ public class ApplicationService {
         Application application = Application.builder()
                 .candidateProfile(candidateProfile)
                 .job(job)
+                .coverLetter(request.getCoverLetter())
                 .build();
 
         Application savedApplication = applicationRepository.save(application);
@@ -68,7 +70,7 @@ public class ApplicationService {
      */
     public List<ApplicationResponse> getMyApplications(Long userId) {
         CandidateProfile candidateProfile = candidateProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Candidate profile not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Candidate profile not found."));
 
         return applicationRepository.findByCandidateProfileId(candidateProfile.getId())
                 .stream()
@@ -100,7 +102,7 @@ public class ApplicationService {
     @Transactional
     public ApplicationResponse updateApplicationStatus(Long applicationId, UpdateApplicationStatusRequest request) {
         Application application = applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new RuntimeException("Application not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found."));
 
         application.setStatus(request.getStatus());
 
@@ -124,6 +126,7 @@ public class ApplicationService {
                 .recruiterCompany(application.getJob().getRecruiterProfile().getCompanyName())
                 .status(application.getStatus())
                 .appliedAt(application.getAppliedAt())
+                .coverLetter(application.getCoverLetter())
                 .build();
     }
 }

@@ -14,7 +14,8 @@ import java.util.List;
  * Custom implementation of Spring Security's UserDetails interface.
  * Wraps the User entity to expose the authenticated user's ID to controllers.
  * The authority string is resolved eagerly at construction time to avoid
- * LazyInitializationException when getAuthorities() is called outside a transaction.
+ * LazyInitializationException when getAuthorities() is called outside a
+ * transaction.
  */
 public class CustomUserDetails implements UserDetails {
 
@@ -29,7 +30,9 @@ public class CustomUserDetails implements UserDetails {
     /**
      * Returns the authenticated user's database ID.
      */
-    public Long getId() { return user.getId(); }
+    public Long getId() {
+        return user.getId();
+    }
 
     @Override
     public String getUsername() {
@@ -47,14 +50,22 @@ public class CustomUserDetails implements UserDetails {
     }
 
     @Override
-    public boolean isAccountNonExpired() { return true; }
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
     @Override
-    public boolean isAccountNonLocked() { return true; }
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
     @Override
-    public boolean isCredentialsNonExpired() { return true; }
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
     @Override
-    public boolean isEnabled() { return true; }
+    public boolean isEnabled() {
+        return true;
+    }
 }

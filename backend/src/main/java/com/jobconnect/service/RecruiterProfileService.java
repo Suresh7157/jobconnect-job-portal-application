@@ -3,6 +3,7 @@ package com.jobconnect.service;
 import com.jobconnect.dto.RecruiterProfileRequest;
 import com.jobconnect.dto.RecruiterProfileResponse;
 import com.jobconnect.entity.RecruiterProfile;
+import com.jobconnect.exception.ResourceNotFoundException;
 import com.jobconnect.repository.RecruiterProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class RecruiterProfileService {
      */
     public RecruiterProfileResponse getMyProfile(Long userId) {
         RecruiterProfile profile = recruiterProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Recruiter profile not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Recruiter profile not found."));
 
         return mapToResponse(profile);
     }
@@ -43,7 +44,7 @@ public class RecruiterProfileService {
     @Transactional
     public RecruiterProfileResponse updateMyProfile(Long userId, RecruiterProfileRequest request) {
         RecruiterProfile profile = recruiterProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Recruiter profile not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Recruiter profile not found."));
 
         profile.setCompanyName(request.getCompanyName());
         profile.setCompanyWebsite(request.getCompanyWebsite());

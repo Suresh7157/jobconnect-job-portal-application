@@ -1,6 +1,7 @@
 package com.jobconnect.controller;
 
 import com.jobconnect.dto.JobResponse;
+import com.jobconnect.enums.JobType;
 import com.jobconnect.service.PublicJobService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +25,14 @@ public class PublicJobController {
     private final PublicJobService publicJobService;
 
     /**
-     * GET /api/jobs/
-     * Retrieves all available job postings.
+     * GET /api/jobs
+     * Retrieves all OPEN job postings, optionally filtered by job type.
      */
     @GetMapping
-    public ResponseEntity<List<JobResponse>> getAllJobs() {
-        List<JobResponse> response = publicJobService.getAllJobs();
+    public ResponseEntity<List<JobResponse>> getAllJobs(
+            @RequestParam(required = false) JobType jobType
+    ) {
+        List<JobResponse> response = publicJobService.getAllJobs(jobType);
         return ResponseEntity.ok(response);
     }
 
@@ -45,21 +48,27 @@ public class PublicJobController {
 
     /**
      * GET /api/jobs/search/title
-     * Searches for job postings by title keyword.
+     * Searches for OPEN job postings by title keyword, optionally filtered by job type.
      */
     @GetMapping("/search/title")
-    public ResponseEntity<List<JobResponse>> searchByTitle(@RequestParam String title) {
-        List<JobResponse> response = publicJobService.searchByTitle(title);
+    public ResponseEntity<List<JobResponse>> searchByTitle(
+            @RequestParam String title,
+            @RequestParam(required = false) JobType jobType
+    ) {
+        List<JobResponse> response = publicJobService.searchByTitle(title, jobType);
         return ResponseEntity.ok(response);
     }
 
     /**
      * GET /api/jobs/search/location
-     * Searches for job postings by location keyword.
+     * Searches for OPEN job postings by location keyword, optionally filtered by job type.
      */
     @GetMapping("/search/location")
-    public ResponseEntity<List<JobResponse>> searchByLocation(@RequestParam String location) {
-        List<JobResponse> response = publicJobService.searchByLocation(location);
+    public ResponseEntity<List<JobResponse>> searchByLocation(
+            @RequestParam String location,
+            @RequestParam(required = false) JobType jobType
+    ) {
+        List<JobResponse> response = publicJobService.searchByLocation(location, jobType);
         return ResponseEntity.ok(response);
     }
 }

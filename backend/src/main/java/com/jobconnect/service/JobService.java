@@ -5,6 +5,7 @@ import com.jobconnect.dto.JobResponse;
 import com.jobconnect.dto.UpdateJobStatusRequest;
 import com.jobconnect.entity.Job;
 import com.jobconnect.entity.RecruiterProfile;
+import com.jobconnect.exception.ResourceNotFoundException;
 import com.jobconnect.repository.JobRepository;
 import com.jobconnect.repository.RecruiterProfileRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class JobService {
     @Transactional
     public JobResponse createJob(Long userId, JobRequest request) {
         RecruiterProfile recruiterProfile = recruiterProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Recruiter profile not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Recruiter profile not found."));
 
         Job job = Job.builder()
                 .recruiterProfile(recruiterProfile)
@@ -61,7 +62,7 @@ public class JobService {
      */
     public List<JobResponse> getMyJobs(Long userId) {
         RecruiterProfile recruiterProfile = recruiterProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Recruiter profile not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Recruiter profile not found."));
 
         return jobRepository.findByRecruiterProfileId(recruiterProfile.getId())
                 .stream()
@@ -81,10 +82,10 @@ public class JobService {
     @Transactional
     public JobResponse updateJob(Long userId, Long jobId, JobRequest request) {
         RecruiterProfile recruiterProfile = recruiterProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Recruiter profile not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Recruiter profile not found."));
 
         Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found."));
 
         if (!job.getRecruiterProfile().getId().equals(recruiterProfile.getId())) {
             throw new RuntimeException("You are not authorized to update this job.");
@@ -111,10 +112,10 @@ public class JobService {
     @Transactional
     public void deleteJob(Long userId, Long jobId) {
         RecruiterProfile recruiterProfile = recruiterProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Recruiter profile not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Recruiter profile not found."));
 
         Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found."));
 
         if (!job.getRecruiterProfile().getId().equals(recruiterProfile.getId())) {
             throw new RuntimeException("You are not authorized to delete this job.");
@@ -135,10 +136,10 @@ public class JobService {
     @Transactional
     public JobResponse updateJobStatus(Long userId, Long jobId, UpdateJobStatusRequest request) {
         RecruiterProfile recruiterProfile = recruiterProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Recruiter profile not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Recruiter profile not found."));
 
         Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found."));
 
         if (!job.getRecruiterProfile().getId().equals(recruiterProfile.getId())) {
             throw new RuntimeException("You are not authorized to update this job.");

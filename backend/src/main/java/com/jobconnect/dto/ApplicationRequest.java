@@ -18,4 +18,6 @@ public class ApplicationRequest {
 
     @NotNull(message = "Job ID is required")
     private Long jobId;
+
+    private String coverLetter;
 }
